@@ -1,0 +1,31 @@
+# omit data files
+
+data/*/*.vd*
+data/*/*.RUN
+data/*/*.LOG
+data/*/*.dd
+data/*/*.lst
+
+# omit html output
+
+outputs/*.html
+
+
+# output csv
+
+outputs/*.csv
+outputs/*/*.csv
+
+# R files
+
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# scratchpad files
+
+scratchpad/*
+
+
+

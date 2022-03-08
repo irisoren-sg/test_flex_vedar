@@ -1,0 +1,127 @@
+---
+title: "Test Flex"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+runtime: shiny
+---
+  
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(rlang)
+library(DT)
+library(vedar)
+library(igraph)
+library(networkD3)
+library(readxl)
+
+# source("./src/graph_functions.R")
+# source("./src/utility_functions.R")
+# source("./src/output_functions.R")
+# source("./src/functions.R")
+
+sn_h <- 600
+sn_w <- 1000
+
+```
+
+
+```{r, include=FALSE}
+#load data
+data(demos_007_vdt)
+demos_007_vdt <- demos_007_vdt %>% 
+  filter(region == "reg1")
+
+
+```
+
+
+```{r functions, include=FALSE}
+
+filter_to_nodes <- function(sub_graph, dat){
+  #filter dat to nodes in subgraph  
+  v <- V(sub_graph)$name
+  
+  dat %>% 
+    filter(process_description %in% v)
+  
+}
+
+
+```
+
+
+
+
+
+
+```{r preprocess_data, include=FALSE}
+
+
+#subset graph to sector of interest
+g <- make_graph_from_veda_df(demos_007_vdt,
+                             input_data_type = "vdt")
+```
+
+
+
+
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+  
+```{r}
+
+
+process_list <- sort(demos_007_vdt$process_description)
+selectInput("process_select", "Process", process_list)
+
+
+selectInput("order_select", "N connections", 
+            seq(1,3))
+
+
+```
+
+This dashboard presents maps of the reference energy system. It enables the visualisation of the RES around a process ("node") for "N connection" steps around the process.
+
+
+**Usage**
+
+* Select a process from the dropdown to render map and relevant data
+* Select the number of connection steps to include in the map
+* The maps are read from left to right. Processes are shown as nodes. The commodities that flow between the processes are identified by pop-up on the links between the processes. In some datasets, nodes with suffixes `_start_process`, `_end_process` appear. These do not represent a physical processes and are only required for visualisation/modelling purposes.
+* An individual process may appear in several maps due to overlaps/
+* The process nodes in maps can be rearranged in the vertical plane.
+
+
+
+Row {data-height=800}
+-----------------------------------------------------------------------
+  
+### Map
+  
+```{r}
+
+
+subgraph_select <- reactive({
+  #make ego graph returns a list of the order connections from node
+    make_ego_graph(g, 
+                 order = input$order_select, 
+                 nodes = input$process_select, 
+                 #to return the graph, take [[1]]
+                 mode = "all")[[1]]
+})
+
+
+renderSankeyNetwork({
+  make_res_from_graph(subgraph_select(),
+                      sankey_width = sn_w, 
+                      sankey_height = sn_h)
+})
+```
+
+
+
