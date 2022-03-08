@@ -27,5 +27,8 @@ outputs/*/*.csv
 
 scratchpad/*
 
+#rsconnect
+rsconnect/*
+
 
 
