@@ -11,7 +11,7 @@ runtime: shiny
 library(flexdashboard)
 library(tidyverse)
 library(rlang)
-library(DT)
+#library(DT)
 library(vedar)
 library(igraph)
 library(networkD3)
@@ -36,13 +36,13 @@ Inputs {.sidebar}
 ```{r}
 
 
-process_list <- sort(demos_007_vdt$process_description)
+process_list <- sort(unique(demos_007_vdt$process_description))
 selectInput("process_select", "Process", 
             selected = process_list[1],
             process_list, 
             multiple = F)
 
-region_list <- sort(demos_007_vdt$region)
+region_list <- sort(unique(demos_007_vdt$region))
 selectInput("region_select", "Region",
             selected = region_list[2],
             region_list,
