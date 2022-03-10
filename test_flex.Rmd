@@ -25,7 +25,7 @@ sn_w <- 1000
 
 ```{r, include=FALSE}
 #load data
-data(demos_007_vdt)
+demos_007_vdt <- read.csv("demos_007_vdt.csv")
 
 ```
 
