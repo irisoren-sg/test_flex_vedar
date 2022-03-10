@@ -25,7 +25,7 @@ sn_w <- 1000
 
 ```{r, include=FALSE}
 #load data
-data(demos_007_vdt)
+demos_007_vdt <- read.csv("demos_007_vdt.csv")
 
 ```
 
@@ -36,13 +36,13 @@ Inputs {.sidebar}
 ```{r}
 
 
-process_list <- sort(demos_007_vdt$process_description)
+process_list <- sort(unique(demos_007_vdt$process_description))
 selectInput("process_select", "Process", 
             selected = process_list[1],
             process_list, 
             multiple = F)
 
-region_list <- sort(demos_007_vdt$region)
+region_list <- sort(unique(demos_007_vdt$region))
 selectInput("region_select", "Region",
             selected = region_list[2],
             region_list,
