@@ -1,0 +1,64 @@
+# Install R version 3.6
+FROM "rocker/r-ver:3.6.3"
+
+LABEL maintainer="Name, Email address"
+ 
+
+# system libraries of general use
+RUN apt-get update && apt-get install -y \
+    sudo \
+    pandoc \
+    pandoc-citeproc \
+    libcurl4-gnutls-dev \
+    libcairo2-dev \
+    libxt-dev \
+    libssl-dev \
+    libssh2-1-dev \
+    libssl1.1 \
+    libxml2-dev  
+ 
+# system library dependency for the myappname app
+RUN apt-get update && apt-get install -y \
+    libmpfr-dev
+ 
+# basic shiny functionality
+RUN R -e "install.packages(c('shiny', 'rmarkdown'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages('remotes', repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages('igraph', version = '1.2.5')"
+RUN R -e "install.packages('networkD3',  version = '0.4')"
+RUN R -e "install.packages('readxl', version = '1.3.1')"
+
+
+
+RUN R -e "remotes::install_github('datasciencescotland/vedar')"
+# For deploying apps from a container
+# Packages that need to be installed from GitHub
+
+# install dependencies of the myappname app
+RUN R -e "install.packages('flexdashboard', repos='https://cloud.r-project.org/')" 
+
+RUN R -e "install.packages('tidyverse', repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages('rlang', repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages('DT', repos='https://cloud.r-project.org/')"
+
+CMD  R -e "rmarkdown::render('test_flex.Rmd')"
+
+RUN mkdir /root/ebreitmoser
+RUN mkdir /root/ebreitmoser/test_flex
+RUN mkdir /root/ebreitmoser/test_flex/src
+
+COPY test_flex.Rmd /root/ebreitmoser/test_flex/test_flex.Rmd
+COPY src/graph_functions.R /root/ebreitmoser/test_flex/src/graph_functions.R
+COPY demos_007_vdt.csv /root/ebreitmoser/test_flex/demos_007_vdt.csv
+
+
+
+EXPOSE 3838
+
+
+WORKDIR /root/ebreitmoser/test_flex/
+
+
+CMD ["R", "-e", "rmarkdown::run('test_flex.Rmd', shiny_args = list(port = 3838, host = '0.0.0.0'))"]
+
+
